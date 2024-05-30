@@ -1,5 +1,6 @@
 from .tmux_launcher import Options, TmuxLauncher
 
+DATA="/mnt/ahp_urban/hist/CUT"
 
 class Launcher(TmuxLauncher):
 
@@ -8,7 +9,7 @@ class Launcher(TmuxLauncher):
         opt = Options()
 
         # common options for all training sessions defined in this launcher
-        opt.set(dataroot="~/datasets/cityscapes/",  # specify --dataroot option here
+        opt.set(dataroot=DATA,  # specify --dataroot option here
                 model="contrastive_cycle_gan",
                 pool_size=0,
                 no_dropout="",
@@ -29,7 +30,7 @@ class Launcher(TmuxLauncher):
             # This command can be run using python -m experiments placeholder run 0
             # It will output python train.py [OPTIONS], where OPTIONS are everything defined in the variable opt
             "python train.py " + str(opt.clone().set(
-                name="cityscapes_placeholder_noidt",  # name of experiments
+                name="ahp_urban_noidt",  # name of experiments
                 nce_idt=False,
             )),
 
@@ -37,7 +38,7 @@ class Launcher(TmuxLauncher):
             # This command can be run using python -m experiments placeholder run 1
             # It removes the option --nce_idt_freq 0.1 that was defined by our common options
             "python train.py " + str(opt.clone().set(
-                name="cityscapes_placeholder_singlelayer",
+                name="ahp_urban_singlelayer",
                 nce_layers="16",
             ).remove("nce_idt_freq")),
 
@@ -45,10 +46,11 @@ class Launcher(TmuxLauncher):
             # third command that performs multigpu training
             # This command can be run using python -m experiments placeholder run 2
             "python train.py " + str(opt.clone().set(
-                name="cityscapes_placeholder_multigpu",
+                name="ahp_urban_multigpu",
                 nce_layers="16",
                 batch_size=4,
-                gpu_ids="0,1",
+                gpu_ids="0,1,2,3",
+                CUT_mode="FastCUT"
             )),
 
         ]
@@ -59,7 +61,7 @@ class Launcher(TmuxLauncher):
     # They can be run using python -m experiments placeholder run_test $i
     def test_commands(self):
         opt = Options()
-        opt.set(dataroot="~/datasets/cityscapes_unaligned/cityscapes",
+        opt.set(dataroot=DATA,
                 model="contrastive_cycle_gan",
                 no_dropout="",
                 init_type="xavier",
