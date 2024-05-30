@@ -98,7 +98,7 @@ class CUTModel(BaseModel):
         initialized at the first feedforward pass with some input images.
         Please also see PatchSampleF.create_mlp(), which is called at the first forward() call.
         """
-        bs_per_gpu = data["A"].size(0) // max(len(self.opt.gpu_ids), 1)
+        bs_per_gpu = 1 # MY MOD # data["A"].size(0) // max(len(self.opt.gpu_ids), 1)
         self.set_input(data)
         self.real_A = self.real_A[:bs_per_gpu]
         self.real_B = self.real_B[:bs_per_gpu]
@@ -150,7 +150,6 @@ class CUTModel(BaseModel):
             self.flipped_for_equivariance = self.opt.isTrain and (np.random.random() < 0.5)
             if self.flipped_for_equivariance:
                 self.real = torch.flip(self.real, [3])
-
         self.fake = self.netG(self.real)
         self.fake_B = self.fake[:self.real_A.size(0)]
         if self.opt.nce_idt:
